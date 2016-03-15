@@ -1,8 +1,10 @@
 package com.example.emindeniz.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -14,8 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +37,7 @@ public class ForecastFragment extends Fragment {
     }
 
     private final String TAG = ForecastFragment.class.getSimpleName();
-    private EditText postalCodeEditText;
+
 
     private ArrayAdapter mForecastAdapter;
 
@@ -61,10 +63,7 @@ public class ForecastFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-
-            String postalCode = postalCodeEditText.getText().toString();
-            fetchWeatherTask.execute(postalCode);
+            updateWeatherForecast();
             return true;
         }
 
@@ -75,6 +74,12 @@ public class ForecastFragment extends Fragment {
 
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeatherForecast();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -82,10 +87,7 @@ public class ForecastFragment extends Fragment {
         ListView forecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
 
 
-        
-        postalCodeEditText = (EditText) rootView.findViewById(R.id.postalCodeEditText);
-
-        final String[] foreCastArray = { };
+        final String[] foreCastArray = {};
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(foreCastArray));
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(),
@@ -109,7 +111,18 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Updates weather forecast
+     */
+    private void updateWeatherForecast(){
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
 
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String location = pref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+
+        fetchWeatherTask.execute(location);
+    }
     /**
      * Take the String representing the complete forecast in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
@@ -234,11 +247,16 @@ public class ForecastFragment extends Fragment {
             String[] weatherData = null;
             OpenWeatherURLConnection weatherURLConnection = new OpenWeatherURLConnection();
             if (params[0] == null || params[0].length() == 0)
-                params[0] = "Kurtkoy";
+                params[0] = "94043";
             String forecastJsonStr = weatherURLConnection.getWeatherForecastForQuery(params[0], "json", "metric", 7);
-            try {
-                weatherData = getWeatherDataFromJson(forecastJsonStr, 7);
 
+            try {
+                if (forecastJsonStr == null) {
+                    Log.e(TAG, "Weather data is null.");
+                    return null;
+                }
+
+                weatherData = getWeatherDataFromJson(forecastJsonStr, 7);
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage() + e);
             }
@@ -253,7 +271,11 @@ public class ForecastFragment extends Fragment {
                 mForecastAdapter.clear();
                 mForecastAdapter.addAll(result);
 
+            }else{
+                Toast.makeText(getActivity(), "We couldn't get any data from server. \n" +
+                        "Did you enter the right postal code ?", Toast.LENGTH_LONG).show();
             }
+
 
         }
     }

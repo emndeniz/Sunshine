@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class OpenWeatherURLConnection {
 
-    private final String TAG =OpenWeatherURLConnection.class.getSimpleName();
+    private final String TAG = OpenWeatherURLConnection.class.getSimpleName();
     // These two need to be declared outside the try/catch
     // so that they can be closed in the finally block.
     private HttpURLConnection urlConnection;
@@ -25,24 +25,25 @@ public class OpenWeatherURLConnection {
     // Will contain the raw JSON response as a string.
     private String forecastJsonStr;
 
+    private final String AppID = "2eefc918de8e837cc8286b3078ffdc2a";
+
     public String getWeatherForecastForQuery(String queryParam, String format, String unit, int numDays){
         try {
 
             final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-            final String QUERRY_PARAM = "q";
+            final String QUERRY_PARAM = "zip";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
             final String APPID_PARAM = "appid";
 
-            final String appID = "44db6a862fba0b067b1930da0d769e98";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERRY_PARAM,queryParam)
                     .appendQueryParameter(FORMAT_PARAM,format)
                     .appendQueryParameter(UNITS_PARAM,unit)
                     .appendQueryParameter(DAYS_PARAM,Integer.toString(numDays))
-                    .appendQueryParameter(APPID_PARAM,appID).build();
+                    .appendQueryParameter(APPID_PARAM,AppID).build();
 
 
 
