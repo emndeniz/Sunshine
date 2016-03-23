@@ -12,4 +12,17 @@
         android:singleLine="true">
 
     </EditTextPreference>
+
+
+    <!-- Entries are not visible from users, just constant values-->
+    <!-- EntryValues are visible from users-->
+    <ListPreference
+        android:title="@string/pref_units_label"
+        android:key="@string/pref_units_key"
+        android:defaultValue="@string/pref_units_default"
+        android:entries="@array/unit_entry"
+        android:entryValues="@array/unit_values">
+
+
+    </ListPreference>
 </PreferenceScreen>

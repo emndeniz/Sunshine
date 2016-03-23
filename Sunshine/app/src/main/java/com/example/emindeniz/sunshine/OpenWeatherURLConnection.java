@@ -31,7 +31,7 @@ public class OpenWeatherURLConnection {
         try {
 
             final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
-            final String QUERRY_PARAM = "zip";
+            final String QUERRY_PARAM = "q";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
