@@ -29,4 +29,9 @@
     <!-- Default postal code for unit preference -->
     <string name="pref_units_default" translatable="false">metric</string>
 
+
+    <string name="action_map">Find in map</string>
+
+    <string name="action_share">Share</string>
+
 </resources>
